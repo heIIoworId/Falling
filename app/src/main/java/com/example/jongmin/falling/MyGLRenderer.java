@@ -58,6 +58,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
     private ArrayList<Model> mModels;
     private Model line;
+    private int flag = 0;
     @Override
     // CALLED WHEN SURFACE IS CREATED AT FIRST.
     public void onSurfaceCreated(GL10 unused, EGLConfig config) {
@@ -78,6 +79,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
         mCube = new Cube();
         mModels.add(mCube);
+        line = new Model();
 
 
 
@@ -94,7 +96,10 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
     @Override
     public void onDrawFrame(GL10 unused) {
-
+        if (flag == 0){
+            line.makeShader();
+            flag = 1;
+        }
         // Draw background color
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 
@@ -264,7 +269,6 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 //            normals[idx * 3 + 2] = 0.0f;
 //            idx++;
 //        }
-        line = new Model();
 
         line.setVertices(GeometrySet.cubeVertices);
         line.setNormals(GeometrySet.cubeNormals);
@@ -272,7 +276,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         line.setColor(new float[]{1.0f, 0.0f, 0.0f});
 //        Debug.printArr(vertices);
 //        Debug.printArr(normals);
-        line.make();
+        line.makeBuffer();
 
         Matrix.setIdentityM(mTempMatrix, 0);
         Matrix.scaleM(mTempMatrix, 0 , 2, 2, 2);
