@@ -6,6 +6,7 @@ import android.opengl.Matrix;
 import android.view.MotionEvent;
 
 import com.example.jongmin.falling.Acitivities.MainActivity;
+import com.example.jongmin.falling.Environment.GameEnv;
 import com.example.jongmin.falling.Model.Point;
 import com.example.jongmin.falling.MyGLRenderer;
 
@@ -72,7 +73,8 @@ public class MyGLSurfaceView extends GLSurfaceView {
                 points.clear();
                 break;
             case MotionEvent.ACTION_UP:
-                mRenderer.makeNewModelByTouch(points);
+                GameEnv.newflag = 1;
+                GameEnv.points = points;
                 break;
             case MotionEvent.ACTION_MOVE:
                 if (count == 1){

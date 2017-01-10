@@ -8,6 +8,7 @@ import android.opengl.Matrix;
 import android.util.Log;
 
 import com.example.jongmin.falling.Acitivities.MainActivity;
+import com.example.jongmin.falling.Environment.GameEnv;
 import com.example.jongmin.falling.Model.Cube;
 import com.example.jongmin.falling.Model.GeometrySet;
 import com.example.jongmin.falling.Model.Model;
@@ -96,9 +97,11 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
     @Override
     public void onDrawFrame(GL10 unused) {
-        if (flag == 0){
-            line.makeShader();
-            flag = 1;
+        if(GameEnv.newflag == 1){
+            Model m = new Model();
+            m.makeShader();
+            makeNewModelByTouch(m);
+            GameEnv.newflag = 0;
         }
         // Draw background color
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
@@ -253,35 +256,35 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         this.activity = activity;
     }
 
-    public void makeNewModelByTouch(ArrayList<Point> points){
-//        float[] vertices = new float[points.size() * 3];
-//        float[] normals = new float[points.size() * 3];
-//
-//        int idx = 0;
-//        while (idx != points.size()){
-//            vertices[idx * 3] = (points.get(idx).x/width) * 2.0f - 1.0f;
-//            vertices[idx * 3 + 1] = (points.get(idx).y/height) * 2.0f - 1.0f;
-//            vertices[idx * 3 + 2] = 0.0f;
-//            //System.out.println(points.get(idx).x/width + " " + points.get(idx).y/height);
-////            System.out.println((idx * 3 + 2)+ " " + vertices.length);
-//            normals[idx * 3] = 0.0f;
-//            normals[idx * 3 + 1] = 0.0f;
-//            normals[idx * 3 + 2] = 0.0f;
-//            idx++;
-//        }
+    public void makeNewModelByTouch(Model m){
+        float[] vertices = new float[GameEnv.points.size() * 3];
+        float[] normals = new float[GameEnv.points.size() * 3];
 
-        line.setVertices(GeometrySet.cubeVertices);
-        line.setNormals(GeometrySet.cubeNormals);
-        line.setDrawType(GLES20.GL_LINE_STRIP);
-        line.setColor(new float[]{1.0f, 0.0f, 0.0f});
+        int idx = 0;
+        while (idx != GameEnv.points.size()){
+            vertices[idx * 3] = (GameEnv.points.get(idx).x/width) * 2.0f - 1.0f;
+            vertices[idx * 3 + 1] = -((GameEnv.points.get(idx).y/height) * 2.0f - 1.0f);
+            vertices[idx * 3 + 2] = 0.0f;
+            //System.out.println(points.get(idx).x/width + " " + points.get(idx).y/height);
+//            System.out.println((idx * 3 + 2)+ " " + vertices.length);
+            normals[idx * 3] = 0.0f;
+            normals[idx * 3 + 1] = 0.0f;
+            normals[idx * 3 + 2] = 0.0f;
+            idx++;
+        }
+
+        m.setVertices(vertices);
+        m.setNormals(normals);
+        m.setDrawType(GLES20.GL_LINE_STRIP);
+        m.setColor(new float[]{1.0f, 0.0f, 0.0f});
 //        Debug.printArr(vertices);
 //        Debug.printArr(normals);
-        line.makeBuffer();
+        m.makeBuffer();
 
         Matrix.setIdentityM(mTempMatrix, 0);
         Matrix.scaleM(mTempMatrix, 0 , 2, 2, 2);
-        line.setMatrix(mTempMatrix);
-        mModels.add(line);
+        m.setMatrix(mTempMatrix);
+        mModels.add(m);
 
         
         
