@@ -72,12 +72,12 @@ public class MyGLSurfaceView extends GLSurfaceView {
                 points.clear();
                 break;
             case MotionEvent.ACTION_UP:
-                System.out.println(points.size());
+                mRenderer.makeNewModelByTouch(points);
                 break;
             case MotionEvent.ACTION_MOVE:
                 if (count == 1){
                     Point p = new Point(e.getX(), e.getY());
-                    System.out.println(e.getX() + " " + e.getY());
+//                    System.out.println(e.getX() + " " + e.getY());
                     points.add(p);
                 }
                 if (count == 2){

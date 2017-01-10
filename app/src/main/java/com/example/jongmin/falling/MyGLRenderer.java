@@ -9,9 +9,11 @@ import android.util.Log;
 
 import com.example.jongmin.falling.Acitivities.MainActivity;
 import com.example.jongmin.falling.Model.Cube;
-import com.example.jongmin.falling.Model.Cube2;
+import com.example.jongmin.falling.Model.GeometrySet;
 import com.example.jongmin.falling.Model.Model;
 import com.example.jongmin.falling.Model.Point;
+import com.example.jongmin.falling.Util.Debug;
+import com.example.jongmin.falling.Util.MatOperator;
 
 import org.apache.commons.io.IOUtils;
 
@@ -33,8 +35,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     // TAG
     private static final String TAG = "MyGLRenderer";
 
-    private Cube mCube1;
-    private Cube2 mCube;
+    private Model mCube;
     // DECLARE LIGHTS
     private float[] mLight = new float[3];
     private float[] mLight2 = new float[3];
@@ -50,15 +51,13 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     private float[] mProjMatrix = new float[16];
     private float[] mTempMatrix = new float[16];
 
-
-
-    private float[] mCubeModelMatrix = new float[16];
-    private float[] mCubeModelViewMatrix = new float[16];
-    private float[] mCubeNormalMatrix = new float[16];
+    private int width;
+    private int height;
 
     private MainActivity activity;
 
-    private ArrayList<Model> models;
+    private ArrayList<Model> mModels;
+    private Model line;
     @Override
     // CALLED WHEN SURFACE IS CREATED AT FIRST.
     public void onSurfaceCreated(GL10 unused, EGLConfig config) {
@@ -69,9 +68,18 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         resetViewMatrix();
 
         // INIT BUBBLE
-        mCube = new Cube2();
-        mCube1 = new Cube();
-        mCube.color = new float[] {0.2f, 0.7f, 0.9f};
+//        mCube = new Model();
+//        mCube.setVertices(GeometrySet.cubeVertices);
+//        mCube.setNormals(GeometrySet.cubeNormals);
+//        mCube.setDrawType(GLES20.GL_LINE_STRIP);
+//        mCube.setColor(new float[]{0.0f, 0.0f, 1.0f});
+//        mCube.make();
+        mModels = new ArrayList<Model>();
+
+        mCube = new Cube();
+        mModels.add(mCube);
+
+
 
         // INITIALIZE LIGHTS
         mLight = new float[]{2.0f, 3.0f, 14.0f};
@@ -99,25 +107,28 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         System.arraycopy(mTempMatrix, 0, mViewMatrix, 0, 16);
 
         // Calculate Cube ModelMatrix
-        Matrix.setIdentityM(mCubeModelMatrix, 0);
         float scale = 0.4f;
-        Matrix.scaleM(mCubeModelMatrix, 0, scale, scale, scale);
 
         // Calculate ModelViewMatrix
-        Matrix.multiplyMM(mCubeModelViewMatrix, 0, mViewMatrix, 0, mCubeModelMatrix, 0);
 
         // Calculate NormalMatrix
-        normalMatrix(mCubeNormalMatrix, 0, mCubeModelViewMatrix, 0);
 
         // Draw
-//        mCube.draw(mProjMatrix, mCubeModelViewMatrix, mCubeNormalMatrix, mLight, mLight2);
-        mCube1.draw(mProjMatrix, mViewMatrix);
+//        mCube.draw(mProjMatrix, mViewMatrix);
+//        for (Model m:mModels) {
+//            m.draw(mProjMatrix, mViewMatrix);
+//        }
+
+        for(Model m : mModels){
+            m.draw(mProjMatrix, mViewMatrix);
+        }
     }
 
     @Override
     public void onSurfaceChanged(GL10 unused, int width, int height) {
         GLES20.glViewport(0, 0, width, height);
-        System.out.println(width + " " + height);
+        this.width = width;
+        this.height = height;
 
         // Create a new perspective projection matrix. The height will stay the same
         // while the width will vary as per aspect ratio.
@@ -238,15 +249,46 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     }
 
     public void makeNewModelByTouch(ArrayList<Point> points){
-        float[] vertices = new float[points.size() * 3];
-        int idx = 0;
-        while (idx != points.size()){
-            vertices[idx * 3] = points.get(idx).x;
-            vertices[idx * 3 + 1] = points.get(idx).y;
-            vertices[idx * 3 + 2] = 0.0f;
-        }
-        Model line = new Model();
-        line.setVertices(vertices);
+//        float[] vertices = new float[points.size() * 3];
+//        float[] normals = new float[points.size() * 3];
+//
+//        int idx = 0;
+//        while (idx != points.size()){
+//            vertices[idx * 3] = (points.get(idx).x/width) * 2.0f - 1.0f;
+//            vertices[idx * 3 + 1] = (points.get(idx).y/height) * 2.0f - 1.0f;
+//            vertices[idx * 3 + 2] = 0.0f;
+//            //System.out.println(points.get(idx).x/width + " " + points.get(idx).y/height);
+////            System.out.println((idx * 3 + 2)+ " " + vertices.length);
+//            normals[idx * 3] = 0.0f;
+//            normals[idx * 3 + 1] = 0.0f;
+//            normals[idx * 3 + 2] = 0.0f;
+//            idx++;
+//        }
+        line = new Model();
+
+        line.setVertices(GeometrySet.cubeVertices);
+        line.setNormals(GeometrySet.cubeNormals);
+        line.setDrawType(GLES20.GL_LINE_STRIP);
+        line.setColor(new float[]{1.0f, 0.0f, 0.0f});
+//        Debug.printArr(vertices);
+//        Debug.printArr(normals);
+        line.make();
+
+        Matrix.setIdentityM(mTempMatrix, 0);
+        Matrix.scaleM(mTempMatrix, 0 , 2, 2, 2);
+        line.setMatrix(mTempMatrix);
+        mModels.add(line);
+
+        
+        
+//        line.setVertices(GeometrySet.cubeVertices);
+//        line.setNormals(GeometrySet.cubeNormals);
+//        line.setDrawType(GLES20.GL_LINE_STRIP);
+//        line.setColor(new float[]{1.0f, 0.0f, 0.0f});
+////        Debug.printArr(vertices);
+////        Debug.printArr(normals);
+//        line.make();
+//        mModels.add(line);
     }
 
 }

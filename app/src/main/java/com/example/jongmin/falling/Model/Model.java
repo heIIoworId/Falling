@@ -35,11 +35,10 @@ public class Model {
     private static final int COORDS_PER_VERTEX = 3;
     private static final int VERTEX_STRIDE = COORDS_PER_VERTEX * 4;
 
-    public float color[] = {0.0f, 1.0f, 0.0f};
-
-    protected static float vertices[];
-    protected static float normals[];
-    protected static float textures[];
+    protected float color[] = new float[]{0.0f, 1.0f, 0.0f};
+    protected float vertices[];
+    protected float normals[];
+    protected float textures[];
 
     private float modelMatrix[] = new float[16];
     private float normalMatrix[] = new float[16];
@@ -47,7 +46,11 @@ public class Model {
     private String vshader = "basic-gl2-vshader.glsl";
     private String fshader = "basic-gl2-fshader.glsl";
 
+    private int drawtype = GLES20.GL_TRIANGLES;
+
     public Model(){
+        Matrix.setIdentityM(modelMatrix, 0);
+        Matrix.setIdentityM(normalMatrix, 0);
     }
 
     public void setVertices(float[] vertices){
@@ -60,9 +63,34 @@ public class Model {
         System.arraycopy(normals, 0, this.normals, 0, normals.length);
     }
 
-    public void setBuffer(){
+    public void setMatrix(float[] mat){
+        System.arraycopy(mat, 0, modelMatrix, 0, 16);
+    }
+
+    public void setShader(String vshader, String fshader){
+        this.vshader = vshader;
+        this.fshader = fshader;
+    }
+
+    public void setDrawType(int drawtype){
+        this.drawtype = drawtype;
+    }
+
+    public void setColor(float[] color){
+        this.color[0] = color[0];
+        this.color[1] = color[1];
+        this.color[2] = color[2];
+    }
+
+    public void make(){
+        makeBuffer();
+        makeShader();
+    }
+
+    public void makeBuffer(){
         ByteBuffer byteBuf = ByteBuffer.allocateDirect(vertices.length * 4);
         byteBuf.order(ByteOrder.nativeOrder());
+        System.out.println("make " + vertices.length + " " + normals.length);
         mVertexBuffer = byteBuf.asFloatBuffer();
         mVertexBuffer.put(vertices);
         mVertexBuffer.position(0);
@@ -73,9 +101,8 @@ public class Model {
         mNormalBuffer.put(normals);
         mNormalBuffer.position(0);
     }
-    public void setShader(){
-        Matrix.setIdentityM(modelMatrix, 0);
-        Matrix.setIdentityM(normalMatrix, 0);
+
+    public void makeShader(){
         // prepare shaders and OpenGL program
         int vertexShader = MyGLRenderer.loadShaderFromFile(
                 GLES20.GL_VERTEX_SHADER, vshader);
@@ -83,15 +110,19 @@ public class Model {
                 GLES20.GL_FRAGMENT_SHADER, fshader);
 
         mProgram = GLES20.glCreateProgram();             // create empty OpenGL Program
+        System.out.println("program " + mProgram +" " +vertexShader +" " + fragmentShader);
         GLES20.glAttachShader(mProgram, vertexShader);   // add the vertex shader to program
         GLES20.glAttachShader(mProgram, fragmentShader); // add the fragment shader to program
         GLES20.glLinkProgram(mProgram);                  // create OpenGL program executables
     }
 
+
     public void draw(float[] projMatrix,
                      float[] viewMatrix) {
-        GLES20.glUseProgram(mProgram);
+        System.out.println("hi1");
 
+        GLES20.glUseProgram(mProgram);
+        System.out.println("hi2");
         float[] modelViewMatrix = new float[16];
         Matrix.multiplyMM(modelViewMatrix, 0, viewMatrix, 0, modelMatrix, 0);
 //        MatOperator.print(modelViewMatrix);
@@ -102,6 +133,7 @@ public class Model {
         mNormalMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uNormalMatrix");
         mColorHandle = GLES20.glGetUniformLocation(mProgram, "uColor");
         //mLightHandle = GLES20.glGetUniformLocation(mProgram, "uLight");
+        System.out.println("hi3");
 
         GLES20.glUniformMatrix4fv(mProjMatrixHandle, 1, false, projMatrix, 0);
         GLES20.glUniformMatrix4fv(mModelViewMatrixHandle, 1, false, modelViewMatrix, 0);
@@ -116,21 +148,26 @@ public class Model {
 
         GLES20.glEnableVertexAttribArray(mPositionHandle);
         GLES20.glEnableVertexAttribArray(mNormalHandle);
+        System.out.println("hi4");
 
         GLES20.glVertexAttribPointer(
                 mPositionHandle, COORDS_PER_VERTEX,
                 GLES20.GL_FLOAT, false,
                 VERTEX_STRIDE, mVertexBuffer);
+        System.out.println("hi5");
 
         GLES20.glVertexAttribPointer(
                 mNormalHandle, COORDS_PER_VERTEX,
                 GLES20.GL_FLOAT, false,
                 VERTEX_STRIDE, mNormalBuffer);
+        System.out.println("hi6");
 
+        System.out.println(drawtype + " " + vertices.length);
         // Draw the cube
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, vertices.length / 3);
+        GLES20.glDrawArrays(drawtype, 0, vertices.length / 3);
+        System.out.println("hi7");
 
         GLES20.glDisableVertexAttribArray(mPositionHandle);
-        GLES20.glDisableVertexAttribArray(mNormalHandle);
+//        GLES20.glDisableVertexAttribArray(mNormalHandle);
     }
 }
