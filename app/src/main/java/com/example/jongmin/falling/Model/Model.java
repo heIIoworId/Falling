@@ -119,10 +119,8 @@ public class Model {
 
     public void draw(float[] projMatrix,
                      float[] viewMatrix) {
-        System.out.println("hi1");
 
         GLES20.glUseProgram(mProgram);
-        System.out.println("hi2");
         float[] modelViewMatrix = new float[16];
         Matrix.multiplyMM(modelViewMatrix, 0, viewMatrix, 0, modelMatrix, 0);
 //        MatOperator.print(modelViewMatrix);
@@ -133,7 +131,6 @@ public class Model {
         mNormalMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uNormalMatrix");
         mColorHandle = GLES20.glGetUniformLocation(mProgram, "uColor");
         //mLightHandle = GLES20.glGetUniformLocation(mProgram, "uLight");
-        System.out.println("hi3");
 
         GLES20.glUniformMatrix4fv(mProjMatrixHandle, 1, false, projMatrix, 0);
         GLES20.glUniformMatrix4fv(mModelViewMatrixHandle, 1, false, modelViewMatrix, 0);
@@ -148,24 +145,20 @@ public class Model {
 
         GLES20.glEnableVertexAttribArray(mPositionHandle);
         GLES20.glEnableVertexAttribArray(mNormalHandle);
-        System.out.println("hi4");
 
         GLES20.glVertexAttribPointer(
                 mPositionHandle, COORDS_PER_VERTEX,
                 GLES20.GL_FLOAT, false,
                 VERTEX_STRIDE, mVertexBuffer);
-        System.out.println("hi5");
 
         GLES20.glVertexAttribPointer(
                 mNormalHandle, COORDS_PER_VERTEX,
                 GLES20.GL_FLOAT, false,
                 VERTEX_STRIDE, mNormalBuffer);
-        System.out.println("hi6");
 
         System.out.println(drawtype + " " + vertices.length);
         // Draw the cube
         GLES20.glDrawArrays(drawtype, 0, vertices.length / 3);
-        System.out.println("hi7");
 
         GLES20.glDisableVertexAttribArray(mPositionHandle);
 //        GLES20.glDisableVertexAttribArray(mNormalHandle);

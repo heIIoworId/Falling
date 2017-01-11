@@ -91,12 +91,13 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         // INIT VIEW MATRIX
         Matrix.setIdentityM(mViewRotationMatrix, 0);
         Matrix.setIdentityM(mViewTranslationMatrix, 0);
-        Matrix.translateM(mViewTranslationMatrix, 0, 0, 0, -4f);
+        Matrix.translateM(mViewTranslationMatrix, 0, 0, 0, -1f);
 
     }
 
     @Override
     public void onDrawFrame(GL10 unused) {
+        GLES20.glLineWidth(10.0f);
         if(GameEnv.newflag == 1){
             Model m = new Model();
             m.makeShader();
@@ -141,10 +142,11 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         // Create a new perspective projection matrix. The height will stay the same
         // while the width will vary as per aspect ratio.
         final float ratio = (float) width / height;
-        final float left = -ratio;
-        final float right = ratio;
-        final float bottom = -1.0f;
-        final float top = 1.0f;
+        System.out.println(width + " " + height);
+        final float left = -1;
+        final float right = 1;
+        final float bottom = -1.0f/ratio;
+        final float top = 1.0f/ratio;
         final float near = 1f;
         final float far = 400.0f;
 
@@ -261,9 +263,11 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         float[] normals = new float[GameEnv.points.size() * 3];
 
         int idx = 0;
+        float ratio = (float) width/height;
+        System.out.println(ratio);
         while (idx != GameEnv.points.size()){
-            vertices[idx * 3] = (GameEnv.points.get(idx).x/width) * 2.0f - 1.0f;
-            vertices[idx * 3 + 1] = -((GameEnv.points.get(idx).y/height) * 2.0f - 1.0f);
+            vertices[idx * 3] = ((GameEnv.points.get(idx).x/width) * 2.0f - 1.0f);
+            vertices[idx * 3 + 1] = -((GameEnv.points.get(idx).y/height) * 2.0f - 1.0f)/ratio;
             vertices[idx * 3 + 2] = 0.0f;
             //System.out.println(points.get(idx).x/width + " " + points.get(idx).y/height);
 //            System.out.println((idx * 3 + 2)+ " " + vertices.length);
@@ -281,9 +285,6 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 //        Debug.printArr(normals);
         m.makeBuffer();
 
-        Matrix.setIdentityM(mTempMatrix, 0);
-        Matrix.scaleM(mTempMatrix, 0 , 2, 2, 2);
-        m.setMatrix(mTempMatrix);
         mModels.add(m);
 
         
