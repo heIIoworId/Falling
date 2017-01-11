@@ -36,7 +36,6 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     // TAG
     private static final String TAG = "MyGLRenderer";
 
-    private Model mCube;
     // DECLARE LIGHTS
     private float[] mLight = new float[3];
     private float[] mLight2 = new float[3];
@@ -58,7 +57,6 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     private MainActivity activity;
 
     private ArrayList<Model> mModels;
-    private Model line;
     private int flag = 0;
     @Override
     // CALLED WHEN SURFACE IS CREATED AT FIRST.
@@ -77,12 +75,6 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 //        mCube.setColor(new float[]{0.0f, 0.0f, 1.0f});
 //        mCube.make();
         mModels = new ArrayList<Model>();
-
-        mCube = new Cube();
-        mModels.add(mCube);
-        line = new Model();
-
-
 
         // INITIALIZE LIGHTS
         mLight = new float[]{2.0f, 3.0f, 14.0f};

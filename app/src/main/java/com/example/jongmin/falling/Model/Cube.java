@@ -11,7 +11,7 @@ public class Cube extends Model {
         super();
         setVertices(GeometrySet.cubeVertices);
         setNormals(GeometrySet.cubeNormals);
-        setDrawType(GLES20.GL_LINE_STRIP);
+        setDrawType(GLES20.GL_TRIANGLES);
         setColor(new float[]{0.0f, 0.0f, 1.0f});
         make();
     }

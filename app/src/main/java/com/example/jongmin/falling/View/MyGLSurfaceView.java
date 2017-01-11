@@ -82,7 +82,7 @@ public class MyGLSurfaceView extends GLSurfaceView {
 //                    System.out.println(e.getX() + " " + e.getY());
                     points.add(p);
                 }
-                if (count == 2){
+                else if (count == 2){
                     float[] rot = new float[16];
 
                     Matrix.setIdentityM(rot, 0);
